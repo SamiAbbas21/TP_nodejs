@@ -1,0 +1,26 @@
+const User = require('../models/User');
+
+exports.getUsers = async (req, res) => {
+  const users = await User.find().select('-password');
+  res.json(users);
+};
+
+exports.getUser = async (req, res) => {
+  const user = await User.findById(req.params.id).select('-password');
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  res.json(user);
+};
+
+exports.updateUser = async (req, res) => {
+  const update = req.body;
+  delete update.password;
+  const user = await User.findByIdAndUpdate(req.params.id, update, { new: true }).select('-password');
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  res.json(user);
+};
+
+exports.deleteUser = async (req, res) => {
+  const user = await User.findByIdAndDelete(req.params.id);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+  res.json({ message: 'User deleted' });
+};
